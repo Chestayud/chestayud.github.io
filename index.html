@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chesta Yudhistira Portfolio</title>
+<meta name="description" content="Muhammad Chesta Yudhistira: freelance event crew and coordinator with 28 events since October 2025.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Geist:wght@300..700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Layout: a comp card. The page is the studio wall; the turnaround figure stands in front of a tone-on-tone name, with a spec sheet beside it. */
+  --wall: #e7e4df;
+  --wall-shade: #d8d4cd;
+  --ink: #141414;
+  --ink-soft: #5d5952;
+  --line: rgba(20, 20, 20, 0.14);
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --gutter: clamp(16px, 4vw, 48px);
+  --max: 1320px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--wall);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+.label {
+  font-family: var(--display);
+  font-stretch: 75%;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* ---------- Top bar ---------- */
+.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-top: 20px; padding-bottom: 20px;
+}
+.top .who { font-family: var(--display); font-stretch: 100%; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; }
+.top nav { display: flex; gap: clamp(14px, 2.4vw, 32px); flex-wrap: wrap; justify-content: flex-end; }
+.top nav a { text-decoration: none; }
+.top nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- Hero / turnaround ---------- */
+.hero { position: relative; isolation: isolate; background: var(--wall); overflow: hidden; padding-bottom: 28px; }
+.hero-name {
+  position: absolute; left: 0; right: 0; top: clamp(18px, 4vw, 44px);
+  z-index: 0; text-align: center; pointer-events: none; user-select: none;
+  font-family: var(--display); font-stretch: 125%; font-weight: 800;
+  font-size: min(21vw, 290px); line-height: 0.8; letter-spacing: -0.02em;
+  color: var(--wall-shade);
+}
+.hero-grid {
+  position: relative;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: end;
+  gap: clamp(16px, 3vw, 40px);
+}
+.hero-intro, .spec { position: relative; z-index: 2; padding-bottom: 40px; }
+.hero-intro h1 {
+  margin: 10px 0 14px;
+  font-family: var(--display); font-stretch: 85%; font-weight: 700;
+  font-size: clamp(28px, 3.2vw, 42px); line-height: 1.02; letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.hero-intro p { margin: 0; max-width: 34ch; color: var(--ink-soft); }
+
+.stage {
+  position: relative; z-index: 1; margin: 0;
+  height: clamp(440px, 58vw, 700px); aspect-ratio: 2 / 3;
+  cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+  mix-blend-mode: darken; /* wall pixels lighter than the page drop out, so the figure stands in front of the name */
+}
+.stage.dragging { cursor: grabbing; }
+.stage img {
+  width: 100%; height: 100%; object-fit: cover;
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 99%);
+          mask-image: linear-gradient(to bottom, #000 74%, transparent 99%);
+  pointer-events: none;
+}
+.hint {
+  position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+  transition: opacity .4s ease;
+}
+.hint svg { width: 34px; height: 10px; }
+.stage.touched .hint { opacity: 0; }
+
+.spec { margin: 0; display: grid; gap: 0; justify-self: end; width: min(100%, 280px); }
+.spec div { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.spec div:last-child { border-bottom: 1px solid var(--line); }
+.spec dt { margin: 0; }
+.spec dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 500; }
+
+.turn-ctl { position: relative; z-index: 2; width: min(100%, 420px); margin: 6px auto 0; }
+.hero-grid > .turn-ctl { grid-column: 2; }
+.turn-ctl .row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.turn-ctl output { font-family: var(--display); font-stretch: 100%; font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+.turn-ctl .ticks { display: flex; justify-content: space-between; margin-top: 6px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 0; background: transparent; cursor: pointer; }
+input[type="range"]::-webkit-slider-runnable-track { height: 1px; background: var(--ink); }
+input[type="range"]::-moz-range-track { height: 1px; background: var(--ink); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -6.5px; border-radius: 50%; background: var(--ink); border: 3px solid var(--wall); box-shadow: 0 0 0 1px var(--ink); }
+input[type="range"]::-moz-range-thumb { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); border: 3px solid var(--wall); box-shadow: 0 0 0 1px var(--ink); }
+input[type="range"]:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+/* ---------- Sections ---------- */
+section.block { padding: clamp(56px, 8vw, 104px) 0; border-top: 1px solid var(--line); }
+.sec-head { display: grid; grid-template-columns: minmax(140px, 1fr) 3fr; gap: 24px; margin-bottom: clamp(28px, 4vw, 48px); }
+.sec-head h2 {
+  margin: 0; font-family: var(--display); font-stretch: 80%; font-weight: 700;
+  font-size: clamp(36px, 5.4vw, 72px); line-height: 0.95; letter-spacing: -0.015em; text-wrap: balance;
+}
+.sec-head p { margin: 14px 0 0; color: var(--ink-soft); max-width: 60ch; }
+.body-col { margin-left: calc((100% - 24px) / 4 + 24px); }
+
+/* Profile */
+.about { font-size: clamp(19px, 1.9vw, 24px); line-height: 1.45; max-width: 46ch; margin: 0 0 40px; text-wrap: pretty; }
+.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.facts h3 { margin: 0 0 10px; }
+.facts p, .facts ul { margin: 0; padding: 0; list-style: none; }
+.facts li + li { margin-top: 2px; }
+
+/* Lead roles */
+.leads { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--ink); margin-bottom: 56px; }
+.leads li { list-style: none; padding: 14px 16px 0 0; }
+.leads li + li { padding-left: 16px; border-left: 1px solid var(--line); }
+.leads .role { font-family: var(--display); font-stretch: 85%; font-weight: 700; font-size: 20px; line-height: 1.1; }
+.leads .ev { margin-top: 6px; }
+.leads .when { margin-top: 6px; color: var(--ink-soft); font-size: 14px; font-variant-numeric: tabular-nums; }
+.leads ul, ul.leads { padding: 0; margin-top: 0; }
+
+/* Filter */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.filters button {
+  font: inherit; font-size: 14px; color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.filters button:hover { border-color: var(--ink); }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--wall); border-color: var(--ink); }
+.filters .n { opacity: .6; margin-left: 4px; }
+
+.ev-group + .ev-group { margin-top: 36px; }
+.ev-group h3 { margin: 0 0 6px; display: flex; gap: 10px; align-items: baseline; }
+.ev-group h3 .count { color: var(--ink-soft); }
+.ev-row {
+  display: grid; grid-template-columns: 170px 1fr 220px; gap: 16px; align-items: baseline;
+  padding: 11px 0; border-top: 1px solid var(--line);
+}
+.ev-row:last-child { border-bottom: 1px solid var(--line); }
+.ev-row .d { color: var(--ink-soft); font-size: 14px; font-variant-numeric: tabular-nums; }
+.ev-row .e { font-weight: 500; }
+.ev-row .r { font-size: 15px; }
+.ev-row .r.lead { font-weight: 600; }
+.ev-row .r.lead::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); margin-right: 8px; vertical-align: 2px; }
+.ev-empty { color: var(--ink-soft); padding: 12px 0; }
+
+/* Gallery: collage of full-width rows. Every photo keeps its own shape; photos in a row share one height. */
+.collage { display: grid; gap: 8px; }
+.collage-row { display: flex; gap: 8px; }
+.tile {
+  position: relative; display: block; margin: 0; padding: 0; border: 0; cursor: zoom-in; min-width: 0;
+  flex: var(--ar) 1 0; aspect-ratio: var(--ar); overflow: hidden; background: var(--wall-shade);
+}
+.tile img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.tile:hover img { transform: scale(1.03); }
+.lb {
+  position: fixed; inset: 0; z-index: 50; background: rgba(20, 20, 20, .94);
+  display: grid; grid-template-columns: 64px 1fr 64px; align-items: center; padding: 56px 8px 24px;
+}
+.lb[hidden] { display: none; }
+.lb figure { margin: 0; display: grid; justify-items: center; gap: 12px; min-width: 0; }
+.lb img { max-width: 100%; max-height: calc(100vh - 140px); object-fit: contain; }
+.lb figcaption { color: #e7e4df; }
+.lb button { font: inherit; color: #e7e4df; background: transparent; border: 1px solid rgba(231,228,223,.35); border-radius: 999px; cursor: pointer; }
+.lb button:hover { border-color: #e7e4df; }
+.lb .nav { width: 44px; height: 44px; justify-self: center; font-size: 18px; }
+.lb .close { position: absolute; top: 12px; right: 12px; padding: 7px 14px; font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .tile img { transition: none; } .tile:hover img { transform: none; } }
+
+/* Experience */
+.jobs { display: grid; gap: 0; margin-bottom: 56px; }
+.job { display: grid; grid-template-columns: 170px 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+.job:last-child { border-bottom: 1px solid var(--line); }
+.job .d { color: var(--ink-soft); font-size: 14px; font-variant-numeric: tabular-nums; padding-top: 3px; }
+.job h3 { margin: 0; font-family: var(--display); font-stretch: 85%; font-weight: 700; font-size: 22px; line-height: 1.15; }
+.job .at { color: var(--ink-soft); margin: 2px 0 8px; }
+.job p { margin: 0; max-width: 62ch; }
+
+/* Contact */
+.contact h2 { font-size: clamp(44px, 8vw, 112px); }
+.links { display: grid; }
+.link-row { display: grid; grid-template-columns: 140px 1fr auto; gap: 16px; align-items: center; padding: 16px 0; border-top: 1px solid var(--line); }
+.link-row:last-child { border-bottom: 1px solid var(--line); }
+.link-row a { font-family: var(--display); font-stretch: 90%; font-weight: 600; font-size: clamp(18px, 2.2vw, 26px); text-decoration: none; overflow-wrap: anywhere; }
+.link-row a:hover { text-decoration: underline; text-underline-offset: 5px; }
+.copy { font: inherit; font-size: 13px; background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; color: var(--ink); min-width: 72px; }
+.copy:hover { border-color: var(--ink); }
+
+footer { padding: 28px 0 40px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 980px) {
+  .hero-grid { grid-template-columns: 1fr; justify-items: center; }
+  .stage { order: 1; height: clamp(420px, 120vw, 600px); }
+  .hero-intro { order: 3; padding-bottom: 0; text-align: center; }
+  .hero-intro p { margin: 0 auto; }
+  .spec { order: 4; justify-self: center; padding-bottom: 0; width: min(100%, 360px); }
+  .turn-ctl { order: 2; }
+  .hero-grid > .turn-ctl { grid-column: auto; margin-bottom: 12px; }
+  .leads { grid-template-columns: repeat(2, 1fr); }
+  .leads li { padding: 14px 16px 14px 0 !important; border-left: 0 !important; border-bottom: 1px solid var(--line); }
+  .leads li:nth-child(even) { padding-left: 16px !important; border-left: 1px solid var(--line) !important; }
+  .sec-head { grid-template-columns: 1fr; gap: 8px; }
+  .body-col { margin-left: 0; }
+  .facts { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 620px) {
+  .ev-row { grid-template-columns: 1fr; gap: 2px; }
+  .ev-row .d { order: 3; }
+  .job, .link-row { grid-template-columns: 1fr; gap: 4px; }
+  .link-row .copy { justify-self: start; margin-top: 4px; }
+  .facts { grid-template-columns: 1fr; }
+  .leads { grid-template-columns: 1fr; }
+  .leads li, .leads li:nth-child(even) { padding-left: 0 !important; border-left: 0 !important; }
+  .top nav { gap: 12px; }
+  .collage { --h: 132px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .collage::after { content: ""; flex-grow: 9999; }
+  .collage-row { display: contents; }
+  .tile { flex: calc(var(--ar) * 100) 1 calc(var(--ar) * var(--h)); }
+  .lb { grid-template-columns: 44px 1fr 44px; padding: 56px 0 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hint { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="wrap top">
+  <a class="who" href="#turn">M. Chesta Yudhistira</a>
+  <nav class="label" aria-label="Sections">
+    <a href="#events">Events</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#experience">Experience</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero" id="turn" aria-label="Introduction">
+  <div class="hero-name" aria-hidden="true">CHESTA</div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-intro">
+        <div class="label">Event crew &amp; coordinator</div>
+        <h1>Floor, LO and crew lead for auto shows, forums and brand launches</h1>
+        <p>28 events since October 2025, from floor crew to Coordinator, PIC and Floor Manager.</p>
+      </div>
+
+      <figure class="stage" id="stage">
+        <img id="turnImg" src="turn-24.webp" width="680" height="1020" alt="Chesta standing, full-length, facing the camera. Drag to turn him from profile to profile." draggable="false">
+        <span class="hint label" aria-hidden="true">
+          <svg viewBox="0 0 34 10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 5h32M5 1 1 5l4 4M29 1l4 4-4 4"/></svg>
+          Drag to turn
+        </span>
+      </figure>
+
+      <dl class="spec">
+        <div><dt class="label">Height</dt><dd>175 cm</dd></div>
+        <div><dt class="label">Weight</dt><dd>65 kg</dd></div>
+        <div><dt class="label">Events</dt><dd>28 since Oct 2025</dd></div>
+        <div><dt class="label">Lead roles</dt><dd>Coordinator, PIC, Floor Manager</dd></div>
+        <div><dt class="label">Education</dt><dd>Management, Gunadarma University</dd></div>
+      </dl>
+
+      <div class="turn-ctl">
+        <div class="row">
+          <label class="label" for="turnRange">Turn</label>
+          <output id="turnOut" for="turnRange">Front</output>
+        </div>
+        <input type="range" id="turnRange" min="0" max="48" step="1" value="24" aria-describedby="turnOut">
+        <div class="ticks label" aria-hidden="true"><span>Profile</span><span>Front</span><span>Profile</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="profile" aria-labelledby="profile-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">Profile</div>
+      <h2 id="profile-h">Hi, I’m Chesta</h2>
+    </div>
+    <div class="body-col">
+      <p class="about">I’m a management graduate from Gunadarma University. Since October 2025 I’ve worked 28 events as freelance crew, starting on logistics and floor crew and moving up to Coordinator, PIC and Floor Manager roles. I’m looking for a full-time role in event operations or project coordination.</p>
+      <div class="facts">
+        <div>
+          <h3 class="label">Education</h3>
+          <p>Bachelor’s in Management, Faculty of Economics<br>Gunadarma University, 2020–2024<br>GPA 3.62 / 4.00</p>
+        </div>
+        <div>
+          <h3 class="label">On site</h3>
+          <ul>
+            <li>Floor management &amp; crew coordination</li>
+            <li>Liaison officer: transport, seating, lobby</li>
+            <li>Registration, ushering, crowd control</li>
+            <li>Logistics &amp; seating arrangement</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="label">Tools &amp; certification</h3>
+          <ul>
+            <li>Microsoft Office, SPSS</li>
+            <li>Adobe Premiere Pro, CapCut</li>
+            <li>OBS Studio, TikTok Live Studio</li>
+            <li>Certificate of Competence: Qualification 6 Marketing (2024)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="events" aria-labelledby="events-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">Events</div>
+      <div>
+        <h2 id="events-h">28 events in 13 months</h2>
+        <p>October 2025 to November 2026, as freelance crew through event organizers.</p>
+      </div>
+    </div>
+
+    <div class="label" style="margin-bottom:10px">Lead roles</div>
+    <ul class="leads">
+      <li><div class="role">Floor Manager</div><div class="ev">Dior Autumn/Winter 2026 Pop-Up Launch</div><div class="when">Aug 2026</div></li>
+      <li><div class="role">Coordinator</div><div class="ev">FinExpo 2026 – Tring</div><div class="when">Oct–Nov 2026</div></li>
+      <li><div class="role">Crew PIC</div><div class="ev">FIFA World Cup Final x Unilever</div><div class="when">Jul 2026</div></li>
+      <li><div class="role">Coordinator</div><div class="ev">FIFA x Unilever</div><div class="when">May 2026</div></li>
+      <li><div class="role">Event PIC</div><div class="ev">LPS Lestari Budaya</div><div class="when">Dec 2025</div></li>
+    </ul>
+
+    <div class="filters" role="group" aria-label="Filter events by role" id="filters"></div>
+    <div id="eventList" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="block" id="gallery" aria-labelledby="gallery-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">Gallery</div>
+      <div>
+        <h2 id="gallery-h">Studio digitals and event days</h2>
+        <p>Height 175 cm · Weight 65 kg. Select a photo to see it larger.</p>
+      </div>
+    </div>
+    <div class="collage" id="collage">
+    <div class="collage-row">
+      <button class="tile" type="button" style="--ar:0.6667" data-i="0" data-cap="Studio · Front" aria-label="View larger: Studio · Front"><img src="photo-front.jpg" loading="lazy" alt="Chesta, studio headshot facing the camera, black T-shirt"></button>
+      <button class="tile" type="button" style="--ar:1.5" data-i="1" data-cap="Garmin" aria-label="View larger: Garmin"><img src="photo-event-garmin.jpg" loading="lazy" alt="Event crew posing with the Garmin “beat yesterday” sign"></button>
+      <button class="tile" type="button" style="--ar:0.6667" data-i="2" data-cap="Studio · Smile" aria-label="View larger: Studio · Smile"><img src="photo-smile.jpg" loading="lazy" alt="Chesta smiling, studio half body"></button>
+      <button class="tile" type="button" style="--ar:0.75" data-i="3" data-cap="FEKDI x IFSE 2025" aria-label="View larger: FEKDI x IFSE 2025"><img src="photo-event-fekdi.jpg" loading="lazy" alt="Crew group photo in front of the FEKDI x IFSE backdrop"></button>
+      <button class="tile" type="button" style="--ar:0.6667" data-i="4" data-cap="Studio · Full length" aria-label="View larger: Studio · Full length"><img src="photo-full-length.jpg" loading="lazy" alt="Chesta full length in black T-shirt, trousers and shoes"></button>
+    </div>
+    <div class="collage-row">
+      <button class="tile" type="button" style="--ar:0.75" data-i="5" data-cap="LPS Lestari Budaya" aria-label="View larger: LPS Lestari Budaya"><img src="photo-event-lps.jpg" loading="lazy" alt="Crew in batik posing on the LPS #KamiSiap stage"></button>
+      <button class="tile" type="button" style="--ar:0.75" data-i="6" data-cap="Danantara TIIF 2026" aria-label="View larger: Danantara TIIF 2026"><img src="photo-event-danantara.jpg" loading="lazy" alt="Crew in black lined up at the Danantara National EV Competitiveness Forum 2026 backdrop"></button>
+      <button class="tile" type="button" style="--ar:0.6667" data-i="7" data-cap="Studio · Three-quarter" aria-label="View larger: Studio · Three-quarter"><img src="photo-three-quarter.jpg" loading="lazy" alt="Chesta in a three-quarter pose, one hand in his pocket"></button>
+      <button class="tile" type="button" style="--ar:0.75" data-i="8" data-cap="GWM booth" aria-label="View larger: GWM booth"><img src="photo-event-gwm.jpg" loading="lazy" alt="Crew group photo at the GWM auto show booth"></button>
+      <button class="tile" type="button" style="--ar:0.75" data-i="9" data-cap="Crew line-up" aria-label="View larger: Crew line-up"><img src="photo-event-crew-lineup.jpg" loading="lazy" alt="Five crew members in black suits lined up in a hotel ballroom"></button>
+    </div>
+    </div>
+  </div>
+</section>
+
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="close" type="button" id="lbClose">Close</button>
+  <button class="nav" type="button" id="lbPrev" aria-label="Previous photo">←</button>
+  <figure><img id="lbImg" src="" alt=""><figcaption class="label" id="lbCap"></figcaption></figure>
+  <button class="nav" type="button" id="lbNext" aria-label="Next photo">→</button>
+</div>
+
+<section class="block" id="experience" aria-labelledby="experience-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">Experience</div>
+      <h2 id="experience-h">Before events</h2>
+    </div>
+    <div class="body-col">
+      <div class="jobs">
+        <article class="job">
+          <div class="d">Sep – Nov 2024</div>
+          <div>
+            <h3>Customer Service</h3>
+            <div class="at">DITUSI Official</div>
+            <p>Processed transactions of up to $1,000 a day, resolved customer complaints, and organized offline and online events that beat their targets.</p>
+          </div>
+        </article>
+        <article class="job">
+          <div class="d">Jul 2022 – Dec 2024</div>
+          <div>
+            <h3>Live Streamer</h3>
+            <div class="at">TikTok, self-employed</div>
+            <p>Hosted live streams reaching 10,000+ viewers, built a community of regular viewers, and edited clips into TikTok content.</p>
+          </div>
+        </article>
+        <article class="job">
+          <div class="d">Jan – Apr 2022</div>
+          <div>
+            <h3>Staff</h3>
+            <div class="at">MAP19 My Coffee Story</div>
+            <p>Recorded daily income and expenses, managed raw material stock, reported to central management and served customers.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block contact" id="contact" aria-labelledby="contact-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">Contact</div>
+      <div>
+        <h2 id="contact-h">Get in touch</h2>
+        <p>Open to full-time roles in event operations and project coordination.</p>
+      </div>
+    </div>
+    <div class="body-col links">
+      <div class="link-row">
+        <span class="label">WhatsApp</span>
+        <a href="https://wa.me/6281991458800" target="_blank" rel="noopener">+62 819-9145-8800</a>
+        <button class="copy" type="button" data-copy="+6281991458800">Copy</button>
+      </div>
+      <div class="link-row">
+        <span class="label">Email</span>
+        <a href="mailto:chestayud@gmail.com">chestayud@gmail.com</a>
+        <button class="copy" type="button" data-copy="chestayud@gmail.com">Copy</button>
+      </div>
+      <div class="link-row">
+        <span class="label">LinkedIn</span>
+        <a href="https://www.linkedin.com/in/mchestayud/" target="_blank" rel="noopener">linkedin.com/in/mchestayud</a>
+        <span></span>
+      </div>
+      <div class="link-row">
+        <span class="label">CV</span>
+        <a href="CV_Muhammad_Chesta_Yudhistira.pdf" target="_blank" rel="noopener">Open CV (PDF, 1 page)</a>
+        <span></span>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap label">
+  <span>© 2026 Muhammad Chesta Yudhistira</span>
+  <a href="#turn">Back to top</a>
+</footer>
+
+<script>
+(() => {
+  /* ---------- Turnaround ---------- */
+  const N = 49, FRONT = 24;
+  const src = i => `turn-${String(i).padStart(2, "0")}.webp`;
+  const stage = document.getElementById("stage");
+  const img = document.getElementById("turnImg");
+  const range = document.getElementById("turnRange");
+  const out = document.getElementById("turnOut");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let cur = FRONT, interacted = false, ready = false, raf = 0;
+
+  const frames = [];
+  let loaded = 0;
+  for (let i = 0; i < N; i++) {
+    const im = new Image();
+    im.decoding = "async";
+    im.onload = im.onerror = () => { if (++loaded === N) onReady(); };
+    im.src = src(i);
+    frames.push(im);
+  }
+
+  function label(i) {
+    const deg = Math.round((i - FRONT) / FRONT * 90);
+    return deg === 0 ? "Front" : `${deg > 0 ? "+" : "−"}${Math.abs(deg)}°`;
+  }
+  function show(v) {
+    const i = Math.max(0, Math.min(N - 1, Math.round(v)));
+    if (i === cur) return;
+    cur = i;
+    img.src = frames[i].src;
+    range.value = i;
+    out.textContent = label(i);
+  }
+  function touch() {
+    if (!interacted) { interacted = true; stage.classList.add("touched"); }
+    cancelAnimationFrame(raf);
+  }
+
+  let dragging = false, startX = 0, startI = FRONT;
+  stage.addEventListener("pointerdown", e => {
+    touch(); dragging = true; startX = e.clientX; startI = cur;
+    stage.classList.add("dragging");
+    try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  stage.addEventListener("pointermove", e => {
+    if (!dragging) return;
+    const perFrame = (stage.clientWidth * 1.5) / (N - 1);
+    show(startI - (e.clientX - startX) / perFrame);
+  });
+  const end = () => { dragging = false; stage.classList.remove("dragging"); };
+  stage.addEventListener("pointerup", end);
+  stage.addEventListener("pointercancel", end);
+  range.addEventListener("input", () => { touch(); show(+range.value); });
+
+  // One slow sweep after the frames load: front, one profile, the other, back to front.
+  function onReady() {
+    ready = true;
+    if (reduce || interacted) return;
+    const keys = [FRONT, N - 1, 0, FRONT], durs = [1100, 2000, 1100];
+    const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    let seg = 0, t0 = performance.now() + 500;
+    const step = now => {
+      if (interacted) return;
+      const t = (now - t0) / durs[seg];
+      if (t < 0) { raf = requestAnimationFrame(step); return; }
+      show(keys[seg] + (keys[seg + 1] - keys[seg]) * ease(Math.min(1, t)));
+      if (t >= 1) { seg++; t0 = now; if (seg >= durs.length) return; }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  }
+
+  /* ---------- Events ---------- */
+  // To add an event: add one line here. g = group, t = tags (lead, lo, floor).
+  const EVENTS = [
+    { g: "Upcoming", e: "Gaikindo Auto Week 2026 – GWM", r: "Floor PIC", d: "20–29 Nov 2026", t: ["lead"] },
+    { g: "Upcoming", e: "Launching Swara Indonesia Raya", r: "Floor Crew", d: "13 Nov 2026", t: ["floor"] },
+
+    { g: "2026", e: "Unilever Food Social Ramadan Summit", r: "Usher", d: "11 Nov 2026", t: ["floor"] },
+    { g: "2026", e: "FinExpo 2026 – Tring", r: "Coordinator", d: "29 Oct – 1 Nov 2026", t: ["lead"] },
+    { g: "2026", e: "Danantara Technology Innovation Investment Forum 2026", r: "Floor Crew; LO – Seating", d: "6–12 & 26–28 Oct 2026", t: ["floor", "lo"] },
+    { g: "2026", e: "EKRAF The 5th World Conference on Creative Economy", r: "—", d: "21–23 Oct 2026", t: [] },
+    { g: "2026", e: "Indonesia Sharia Economic Festival (ISEF) 2026", r: "LO – Main Lobby", d: "14–18 Oct 2026", t: ["lo"] },
+    { g: "2026", e: "The Continuum: Timeless Transformation", r: "Crowd Control", d: "28 Sep 2026", t: ["floor"] },
+    { g: "2026", e: "Polytron Fest 51", r: "Floor Crew", d: "19–20 Sep 2026", t: ["floor"] },
+    { g: "2026", e: "Munas PSMTI", r: "LO – Transport", d: "5–6 Sep 2026", t: ["lo"] },
+    { g: "2026", e: "Garmin Asian Games 2026 Press Conference", r: "Registration", d: "27 Aug 2026", t: ["floor"] },
+    { g: "2026", e: "Karya Kreatif Indonesia 2026", r: "LO – Business Matching", d: "20–23 Aug 2026", t: ["lo"] },
+    { g: "2026", e: "Dior Autumn/Winter 2026 Pop-Up Launch Cocktail Event", r: "Floor Manager", d: "14 Aug 2026", t: ["lead"] },
+    { g: "2026", e: "Gaikindo Indonesia International Auto Show (GIIAS) – GWM", r: "Floor Crew", d: "29 Jul – 9 Aug 2026", t: ["floor"] },
+    { g: "2026", e: "Daikin The Great Leap", r: "Floor Crew", d: "24 Jul 2026", t: ["floor"] },
+    { g: "2026", e: "FIFA World Cup Final x Unilever", r: "Crew PIC", d: "20 Jul 2026", t: ["lead"] },
+    { g: "2026", e: "HYROX Garmin 2026", r: "Floor Crew", d: "27–28 Jun 2026", t: ["floor"] },
+    { g: "2026", e: "2026 Garmin Run Marathon Series Press Conference", r: "Floor Crew", d: "25 Jun 2026", t: ["floor"] },
+    { g: "2026", e: "FIFA x Unilever", r: "Coordinator", d: "25–31 May 2026", t: ["lead"] },
+    { g: "2026", e: "The 6th Siloam Oncology Summit", r: "LO – Transport", d: "22–24 May 2026", t: ["lo"] },
+    { g: "2026", e: "Volvo EX90 Launch", r: "Floor Crew", d: "19 May 2026", t: ["floor"] },
+    { g: "2026", e: "HUT Danantara", r: "Seating Arrangement", d: "10–11 Mar 2026", t: ["floor"] },
+    { g: "2026", e: "Indonesia International Motor Show (IIMS) – GWM", r: "Floor Crew", d: "5–15 Feb 2026", t: ["floor"] },
+    { g: "2026", e: "Shell Business Plan Cascade", r: "Floor Crew", d: "21 Jan 2026", t: ["floor"] },
+
+    { g: "2025", e: "LPS Lestari Budaya", r: "Event PIC", d: "18 Dec 2025", t: ["lead"] },
+    { g: "2025", e: "Festival HUT KPR BTN", r: "Floor Crew", d: "8–14 Dec 2025", t: ["floor"] },
+    { g: "2025", e: "Gaikindo Jakarta Auto Week – GWM", r: "F&B Server", d: "21–30 Nov 2025", t: ["floor"] },
+    { g: "2025", e: "Harmony in Culture: Embracing Diversity, Celebrating Unity", r: "Runner", d: "9 Nov 2025", t: ["floor"] },
+    { g: "2025", e: "International Pacific Cultural Synergy (IPACS) 2025 Press Conference", r: "Logistics", d: "6 Nov 2025", t: ["floor"] },
+    { g: "2025", e: "Festival Ekonomi Keuangan Digital Indonesia (FEKDI) & Indonesia Fintech Summit & Expo", r: "Logistics", d: "29 Oct – 1 Nov 2025", t: ["floor"] },
+  ];
+  const FILTERS = [
+    { id: "all", name: "All" },
+    { id: "lead", name: "Lead roles" },
+    { id: "lo", name: "Liaison officer" },
+    { id: "floor", name: "Floor & operations" },
+  ];
+  const fWrap = document.getElementById("filters");
+  const list = document.getElementById("eventList");
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  let active = "all";
+
+  function renderFilters() {
+    fWrap.innerHTML = FILTERS.map(f => {
+      const n = f.id === "all" ? EVENTS.length : EVENTS.filter(x => x.t.includes(f.id)).length;
+      return `<button type="button" id="filter-${f.id}" data-f="${f.id}" aria-pressed="${f.id === active}">${f.name}<span class="n">${n}</span></button>`;
+    }).join("");
+  }
+  function renderList() {
+    const rows = EVENTS.filter(x => active === "all" || x.t.includes(active));
+    const groups = [...new Set(EVENTS.map(x => x.g))];
+    list.innerHTML = groups.map(g => {
+      const items = rows.filter(x => x.g === g);
+      if (!items.length) return "";
+      const unit = items.length === 1 ? "event" : "events";
+      return `<div class="ev-group"><h3 class="label">${g}<span class="count">${items.length} ${unit}</span></h3>` +
+        items.map(x => `<div class="ev-row"><div class="d">${esc(x.d)}</div><div class="e">${esc(x.e)}</div><div class="r${x.t.includes("lead") ? " lead" : ""}">${esc(x.r)}</div></div>`).join("") +
+        `</div>`;
+    }).join("") || `<p class="ev-empty">No events in this filter yet.</p>`;
+  }
+  fWrap.addEventListener("click", e => {
+    const b = e.target.closest("button[data-f]");
+    if (!b) return;
+    active = b.dataset.f;
+    fWrap.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.f === active)));
+    renderList();
+  });
+  renderFilters();
+  renderList();
+
+  /* ---------- Gallery viewer ---------- */
+  const tiles = [...document.querySelectorAll(".tile")];
+  const lb = document.getElementById("lb"), lbImg = document.getElementById("lbImg"), lbCap = document.getElementById("lbCap");
+  let lbIndex = 0, lastTile = null;
+  function lbShow(i) {
+    lbIndex = (i + tiles.length) % tiles.length;
+    const t = tiles[lbIndex], im = t.querySelector("img");
+    lbImg.src = im.src; lbImg.alt = im.alt;
+    lbCap.textContent = `${t.dataset.cap}  ·  ${lbIndex + 1} / ${tiles.length}`;
+  }
+  function lbOpen(i) { lastTile = tiles[i]; lbShow(i); lb.hidden = false; document.body.style.overflow = "hidden"; document.getElementById("lbClose").focus(); }
+  function lbClose() { lb.hidden = true; document.body.style.overflow = ""; if (lastTile) lastTile.focus(); }
+  tiles.forEach((t, i) => t.addEventListener("click", () => lbOpen(i)));
+  document.getElementById("lbClose").addEventListener("click", lbClose);
+  document.getElementById("lbPrev").addEventListener("click", () => lbShow(lbIndex - 1));
+  document.getElementById("lbNext").addEventListener("click", () => lbShow(lbIndex + 1));
+  lb.addEventListener("click", e => { if (e.target === lb) lbClose(); });
+  document.addEventListener("keydown", e => {
+    if (lb.hidden) return;
+    if (e.key === "Escape") lbClose();
+    else if (e.key === "ArrowLeft") lbShow(lbIndex - 1);
+    else if (e.key === "ArrowRight") lbShow(lbIndex + 1);
+  });
+
+  /* ---------- Copy buttons ---------- */
+  document.querySelectorAll(".copy").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const text = btn.dataset.copy;
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = "Copied";
+      } catch (_) {
+        btn.textContent = "Copy failed";
+      }
+      setTimeout(() => { btn.textContent = "Copy"; }, 1800);
+    });
+  });
+})();
+</script>
+</body>
+</html>
